@@ -1,4 +1,4 @@
-# stonks
+# stock-viz
 
 This is a helper to visualize expected profit/loss for stocks, options, and futures
 
