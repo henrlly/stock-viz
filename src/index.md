@@ -21,7 +21,7 @@ const data = Array.from({ length: 2 * small_steps + 1}, (_, i) => {
 const table_data = Array.from({ length: 2 * steps + 1}, (_, i) => {
   const target_price = price + (i-steps) * step;
   return {
-  current_price: price, target_price: target_price, ep_price: exit_plan - target_price, sl_price: stop_loss - target_price
+  "Current Price": price, "Target Price": target_price, "Exit Plan": exit_plan - target_price, "Stop Loss": stop_loss - target_price
 }});
 
 const x = "Target Price";
