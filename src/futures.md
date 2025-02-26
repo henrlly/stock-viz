@@ -11,10 +11,10 @@ const steps_m = view(Inputs.range([0.5, 72], {label: "Max delivery date in month
 <!-- need to use a seperate js block as reactive udates only work between blocks -->
 ```js
 const steps = steps_m / 12;
-const step_size = 0.1;
+const step_size = 0.01;
 const data_ls = Array.from({length: price_var_steps*2 + 1}, (_, j) => {
   const sp = spot_price + (j - price_var_steps) * price_var;
-  return { sp: sp, arr: Array.from({ length: steps * Math.floor(1/step_size) + 1}, (_, i) => { 
+  return { sp: sp, arr: Array.from({ length: Math.floor(steps/step_size) + 1}, (_, i) => { 
     return {forward_price: sp * Math.exp(risk_rate * (i * step_size)), timestep: (i * step_size)} 
 })}});
 

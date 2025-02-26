@@ -7,7 +7,7 @@ const price_var_steps = view(Inputs.range([0, 20], {label: "Price Variation Step
 const r = view(Inputs.number({type: "number", label: "Risk-free Rate"}));
 const k = view(Inputs.number({type: "number", label: "Strike Price"}));
 const vol = view(Inputs.number({type: "number", label: "Volatility of Asset"}));
-const steps = view(Inputs.range([10, 50], {label: "Max delivery date in years", step: 5, value: 10}));
+const steps_m = view(Inputs.range([0.5, 72], {label: "Max delivery date in months", step: 0.5, value: 10}));
 ```
 
 ```js
@@ -25,10 +25,11 @@ function ncdf(x) {
 
 <!-- need to use a seperate js block as reactive udates only work between blocks -->
 ```js
-const step_size = 0.1;
+const steps = steps_m / 12;
+const step_size = 0.01;
 const data_ls = Array.from({length: price_var_steps*2 + 1}, (_, j) => {
   const sp = spot_price + (j - price_var_steps) * price_var;
-  return { sp: sp, arr: Array.from({ length: steps * Math.floor(1/step_size) + 1}, (_, i) => { 
+  return { sp: sp, arr: Array.from({ length: Math.floor(steps/step_size) + 1}, (_, i) => { 
     const t = (i * step_size);
     const d1 = (Math.log(sp/k) + (r + ((vol*vol)/2))*t) / (vol * Math.sqrt(t));
     const d2 = d1 - vol * Math.sqrt(t);
@@ -36,13 +37,13 @@ const data_ls = Array.from({length: price_var_steps*2 + 1}, (_, j) => {
     return {call_option_price: c, timestep: t} 
 })}});
 
-const x = "Time After Purchase/year";
+const x = "Time After Purchase/months";
 const y = "Call Option Price";
 view(Plot.plot({
   marks: data_ls.map((row) => {
     const data = row.arr;
-    return [Plot.line(data.map((d) => ({[x]: d.timestep, [y]: d.call_option_price})), {x: x, y: y, stroke: "green"}),
-    Plot.tip(data.map((d) => ({[x]: d.timestep, [y]: d.call_option_price})), Plot.pointer({x: x, y: y, maxRadius: 10, title: (d) => `${x}: ${d[x]}\n${y}: ${d[y]}\nSpot Price: ${row.sp}`})),] }
+    return [Plot.line(data.map((d) => ({[x]: d.timestep * 12, [y]: d.call_option_price})), {x: x, y: y, stroke: "green"}),
+    Plot.tip(data.map((d) => ({[x]: d.timestep * 12, [y]: d.call_option_price})), Plot.pointer({x: x, y: y, maxRadius: 10, title: (d) => `${x}: ${d[x]}\n${y}: ${d[y]}\nSpot Price: ${row.sp}`})),] }
   )
 }));
 ```
